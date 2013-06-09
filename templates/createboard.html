@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block title %}{{ gettext("Create Board") }} - {% endblock %}
+
+{% block container %}
+  <div id="container" class="edit_container">
+    <div class="createboardform"> 
+      <form action="{{ url_for('create_board') }}" method="post">   
+        <h2>Let's create your Board(・ω・)</h2>
+        <div class="form_section">
+          {{ form.board.label }}{{ form.board(placeholder="")|safe }}
+
+          {% if create_board_error %}
+              <div style="font-size:10px;">{{ create_board_error }}</div>
+          {% endif %}
+
+          {% for field_name, field_errors in form.errors.items() if field_errors %}
+            {% if field_name == "board" %}
+              {% for error in field_errors %}
+              <div style="font-size:10px;">{{ error }}</div>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="form_section">
+          {{ form.description.label }}{{ form.description(cols="35", rows="5")|safe }}
+
+          {% for field_name, field_errors in form.errors.items() if field_errors %}
+            {% if field_name == "description" %}
+              {% for error in field_errors %}
+              <div style="font-size:10px;">{{ error }}</div>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+        <input type="submit" value="create">
+      </form> 
+    </div>
+  </div>
+{% endblock %}

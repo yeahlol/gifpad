@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+{% block title %}{{ username }} - {{ board }} | {% endblock %}
+{% block static %}
+  <!-- javascript files -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="{{ url_for('static', filename='js/jquery.masonry.min.js') }}" type="text/javascript" charset="utf-8"></script>
+  <script src="{{ url_for('static', filename='js/jquery.infinitescroll.min.js') }}" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8">
+
+    $(function() {     
+      var $container = $('#container');
+      $container.imagesLoaded( function(){
+        $container.masonry({
+          itemSelector : '.gif',
+          isFitWidth: true
+        });
+      });
+
+        
+      $container.infinitescroll({
+        navSelector: '#page-nav',
+        nextSelector: '#page-nav a',
+        itemSelector: '.gif',
+        loading: {
+          finishedMsg: 'No more pages to load.',
+        },
+        },
+        function(newElements) {
+          newElements.shift();
+          // hide new items while they are loading
+          var $newElems = $(newElements).css({opacity: 0});
+          // ensure that images load before adding to masonry layout
+          $newElems.imagesLoaded(function(){
+            // show elems now they're ready
+            $newElems.animate({opacity: 1});
+            $container.masonry('appended', $newElems, true);
+          });
+        }
+      );
+    });
+  </script>
+{% endblock %}
+
+{% block container %}
+  <div id="container" class="gifs_container">
+    <div class="gif col6">
+      <a class="board_title" href="/{{ username }}/{{ board }}">{{ board }}</a>
+      <div class="board_description">{{ description }}</div>
+      {% if username == sign_in_username %}
+        <a class="edit_button" href="/{{ username }}/{{ board }}/edit">Edit</a>
+      {% endif %}
+    </div>
+    {% for item in items %}
+      <div class="gif col6">
+        <div class="actions">
+          {% if item['username'] == sign_in_username %}
+            <a href="/gif/{{ item['pagename'] }}/edit" class="small_button">Edit</a> 
+          {% else %}
+            <a href="/gif/{{ item['pagename'] }}/regif" class="small_button">Regif</a> 
+          {% endif %}
+        </div>
+        <div>
+          <a href="/gif/{{ item['pagename'] }}"><img src="/uploads/{{ item['filename'] }}" alt=""></a> 
+        </div>
+
+        <div class="tags"> 
+        {% for tag in item['tags'] %}
+          <span><a href="/tag/{{ tag }}">{{ tag }}</a></span>
+        {% endfor %}
+        </div>
+
+        {% if "fromimgid" not in item %}
+          <div class="user_info">Gifed by <a href="/{{ item['username'] }}" style="font-size:90%;">{{ item['username'] }}</a> onto 
+                                             <a href="/{{ item["username"] }}/{{ item["board"] }}" style="font-size:90%;">{{ item["board"] }}</a></div>
+        {% else %}
+          <div class="user_info">Regifed by <a href="/{{ item['username'] }}" style="font-size:90%;">{{ item['username'] }}</a> onto 
+                                             <a href="/{{ item["username"] }}/{{ item["board"] }}" style="font-size:90%;">{{ item["board"] }}</a></div>
+        {% endif %}
+
+      </div>
+    {% endfor %}
+  </div>
+  <nav id="page-nav" style="display:none;"><a href="/{{ username }}/{{ board }}/2">See</a></nav>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+{% block title %}{{ gettext("Change Password") }} - {% endblock %}
+{% block static %}
+  <!-- javascript files -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8">
+    $(function(){ 
+      $(".nav_submit a").click(function(e){
+        e.preventDefault();
+        $(".submit_popup").attr("style", "");
+      });
+
+      $("form.form_comment textarea").focus(function(){
+        $(".submit_popup").attr("style", "");
+      });
+
+
+      $(".sign_in_form #Submit").live('click', function(){
+        var params = $(this).parents("form").serialize();
+        $.ajax({
+          type: 'POST',
+          url: '{{ url_for("sign_in") }}',
+          data: {data: params},
+          success: function(data, status, xhr) {
+            if (xhr.status === 200 && data.res == "success") {
+              window.location.reload();
+            } else if (data.op == "sign_in") {
+              $(".sign_in_form").find(".error").html(data.res);
+            }
+          },
+          error: function(data, status, xhr) {
+            alert("failure");
+          }
+        });
+      });
+
+      $(".sign_up_form #Submit").live('click', function(){
+        var params = $(this).parents("form").serialize();
+        $.ajax({
+          type: 'POST',
+          url: $(this).parents("form").attr("action"),
+          data: {data: params},
+          success: function(data, status, xhr) {
+            if (xhr.status === 200 && data.res == "success") {
+              window.location.reload();
+            } else if (data.op == "sign_up") {
+              $(".sign_up_form").find(".error").html(data.res);
+            }
+          },
+          error: function(data, status, xhr) {
+            alert("failure");
+          }
+        });
+      });
+
+      $(".changepasswordform #Submit").live('click', function(){
+        console.log($("#form [name=username]").val());
+        $.ajax({
+          type: 'POST',
+          url: $(this).parents("form").attr("action"),
+          data: {data: $("#form [name=username]").val()},
+          success: function(data, status, xhr) {
+            if (xhr.status === 200 && data.res == "success") {
+              $(".changepasswordform").find(".flush").html(data.message);
+            } else if (data.res == "error") {
+              $(".changepasswordform").find(".flush").html(data.message);
+            }
+          },
+          error: function(data, status, xhr) {
+            alert("failure");
+          }
+        });
+      });
+
+    });
+
+    function hidecover(where) {
+      $(where).parents(".bigcover").hide();
+      return false;
+    };
+  </script>
+{% endblock %}
+{% block container %}
+  <div id="container" class="edit_container">
+    <div class="changepasswordform">
+      <h2>Forgot your password?</h2> 
+      <form action="{{ url_for('send_email') }}" id="form">
+        <div class="form_section">
+          {{ form.username.label }} {{ form.username() }}
+
+          {% for field_name, field_errors in form.errors.items() if field_errors %}
+            {% if field_name == "username" %}
+              {% for error in field_errors %}
+              <div style="font-size:10px;">{{ error }}</div>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        <div class="flush" style="font-size:10px;"></div>
+        </div>
+        <input type="button" value="Email me" id="Submit">
+      </form> 
+    </div>
+  <div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+  {% block static %}
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <!-- file for tags-->
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/jquery.tagit.css') }}">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/tag-it.js') }}" type="text/javascript" charset="utf-8"></script>
+
+    <script type="text/javascript" charset="utf-8">
+      $(function(){
+      //-------------------------------
+      // Tag events
+      //-------------------------------
+      var eventTags = $('#eventTags');
+      eventTags.tagit({
+        onTagClicked: function(evt, tag) {
+        }
+      });
+      });
+    </script> 
+  {% endblock %}
+
+{% block container %}
+  {% for message in get_flashed_messages() %}
+    <div style="font-size:10px;">{{ message }}</div>
+  {% endfor %}
+
+  <div id="container">
+    <div class="regif_container">
+      <div class="regifform">
+        <div class="regifform_left"> 
+          <form action="/gif/{{ item['pagename'] }}/regif" method="post">   
+            <h2>Regif</h2>
+            <div class="regifform_left_section">
+              {{ form.board.label }}{{ form.board()|safe }}
+            </div>
+            <div class="regifform_left_section">
+              <label for="tags">{{ gettext("Edit tags:") }}</label>
+              <ul id="eventTags">
+              {% for tag in item['tags'] %}
+                <li>{{ tag }}</li>
+              {% endfor %}
+              </ul>
+
+              {% for field_name, field_errors in form.errors.items() if field_errors %}
+                {% if field_name == "tag_items" or field_name == "tag_length" or field_name == "tag_re" %}
+                  <div style="font-size:10px;">{{ field_errors }}</div>
+                {% endif %}
+              {% endfor %}
+            </div>
+            <div class="regifform_left_section">
+              {{ form.description.label }}{{ form.description(cols="33", rows="5")|safe }}
+
+              {% for field_name, field_errors in form.errors.items() if field_errors %}
+                {% if field_name == "description" %}
+                  {% for error in field_errors %}
+                  <div style="font-size:10px;">{{ error }}</div>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            </div>
+            <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+            <input type="submit" value="Regif It">
+          </form> 
+        </div>
+        <div class="regifform_right">
+          <img src="/uploads/{{ item['filename'] }}" style="max-width: 250px;">
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

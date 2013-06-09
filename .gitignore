@@ -1,0 +1,40 @@
+# 全てのファイルを無視
+*
+# .から始まる設定ファイルも無視
+.*
+
+# 無視したくないファイルは"![ファイル名]"で指定
+### Gitで管理するファイル/サブディレクトリ ###
+!README.md
+!*.py
+!models/
+!network/
+!models/*.py
+!network/*.py
+### Gitで管理するスタティックファイル/サブディレクトリ ###
+!static/
+!static/**/
+!static/**/*.css
+!static/**/*.gif
+!static/**/*.gif
+!static/**/*.png
+!static/**/*.js
+!static/**/*.ico
+### Gitで管理するテンプレートファイル/サブディレクトリ ###
+!templates/
+!templates/*.html
+!templates/anonymous/
+!templates/anonymous/*.html
+### Gitで管理するBEBEL用のファイル/サブディレクトリ ###
+!*.cfg
+!*.pot
+!translations/
+!translations/**/
+!translations/**/**/
+!translations/**/**/*.po
+!translations/**/**/*.mo
+### Gitで管理する他サブディレクトリ ###
+!uploads/
+!logs/
+### Gitで管理する.gitignore ###
+!.gitignore

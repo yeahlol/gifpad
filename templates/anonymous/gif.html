@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+{% block static %}
+  <!-- javascript files -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8">
+    $(function(){ 
+      $(".nav_submit a").click(function(e){
+        e.preventDefault();
+        $(".submit_popup").attr("style", "");
+      });
+
+      $("form.form_comment textarea").focus(function(){
+        $(".submit_popup").attr("style", "");
+      });
+
+
+      $(".sign_in_form #Submit").live('click', function(){
+        var params = $(this).parents("form").serialize();
+        $.ajax({
+          type: 'POST',
+          url: '{{ url_for("sign_in") }}',
+          data: {data: params},
+          success: function(data, status, xhr) {
+            if (xhr.status === 200 && data.res == "success") {
+              window.location.reload();
+            } else if (data.op == "sign_in") {
+              $(".sign_in_form").find(".error").html(data.res);
+            }
+          },
+          error: function(data, status, xhr) {
+            alert("failure");
+          }
+        });
+      });
+
+      $(".sign_up_form #Submit").live('click', function(){
+        var params = $(this).parents("form").serialize();
+        $.ajax({
+          type: 'POST',
+          url: $(this).parents("form").attr("action"),
+          data: {data: params},
+          success: function(data, status, xhr) {
+            if (xhr.status === 200 && data.res == "success") {
+              window.location.reload();
+            } else if (data.op == "sign_up") {
+              $(".sign_up_form").find(".error").html(data.res);
+            }
+          },
+          error: function(data, status, xhr) {
+            alert("failure");
+          }
+        });
+      });
+    });
+
+    function hidecover(where) {
+      $(where).parents(".bigcover").hide();
+      return false;
+    };
+  </script>
+{% endblock %}
+
+{% block container %}
+  <div id="container" class="gifs_container">
+    <div class="page_container">
+      <div class="big_gif_box">
+        <div class="section">
+          <div class="title">
+            <h2>Gif{% if item["description"] %} - {{ item["description"]}} {% endif %}</h2>
+          {% if "fromimgid" not in item %}
+            <div class="subtitle"><p>Gifed by <a href="/{{ item["username"] }}">{{ item["username"] }}</a> - {{ item["createdtime"] | mklag }}</p></div>
+          {% else %}
+            <div class="subtitle"><p>Regifed {% if fromitem %}from <a href="/{{ fromitem["username"] }}/{{ fromitem["board"] }}">{{ fromitem["board"] }}</a>{% endif %}
+                               by <a href="/{{ item["username"] }}">{{ item["username"] }}</a> - {{ item["createdtime"] | mklag }}</p>
+            </div>
+          {% endif %}
+          </div>
+        </div>
+        <div class="section">
+        {% if item['from_externalurl'] %}
+          <a href="{{ item['from_externalurl'] }}"><img src="/uploads/{{ item["filename"] }}" alt=""></a>
+        {% else %}
+          <img src="/uploads/{{ item["filename"] }}" alt=""></a>
+        {% endif %}
+          <div class="tags"> 
+          {% for tag in item['tags'] %}
+            <span><a href="/tag/{{ tag }}">{{ tag }}</a></span>
+          {% endfor %}
+          </div>
+          <div class="comments">
+          {% for commentitem in commentitems %}
+            <div class="comment" data-id="{{ commentitem['id'] }}">
+              <div class="pic"><img src="" alt=""></div>
+              <div class="content">
+                <a href="/{{ commentitem['username'] }}">{{ commentitem['username'] }}</a><br>{{ commentitem['comment'] }}<p style="clear:both;float:none;"></p>
+              </div>
+            </div>
+          {% endfor %}
+            <form action="/gif/{{ item["pagename"] }}/comment" type="post" class="form_comment">
+              <img src="{{ url_for('static', filename='img/usericon.png') }}" style="width:50px;height:50px;" alt="">
+              <textarea id="comment" style="width:550px;height:44px;" placeholder={{ gettext("leave a comment") }}></textarea>
+            </form>
+          </div>
+        </div>
+        {% if regifs %}
+        <div class="section">
+          <div class="regif_title"><h2>{{ regifs }} Regifs</h2></div>
+            <ul class="regifed_list">
+            {% for regifeditem in regifeditems %}
+              <li><a href="/{{ regifeditem["username"] }}">{{ regifeditem["username"] }}</a> onto <a href="/{{ regifeditem["username"] }}/{{ regifeditem["board"] }}">
+                {{ regifeditem["board"] }}</a>
+              </li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div id="footer">
+  </div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+{% block static %}
+  <!-- javascript files -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="{{ url_for('static', filename='js/jquery.masonry.min.js') }}" type="text/javascript" charset="utf-8"></script>
+  <script src="{{ url_for('static', filename='js/jquery.infinitescroll.min.js') }}" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8">
+  $(function(){ 
+    var $container = $('#container');
+
+    $container.imagesLoaded( function(){
+      $container.masonry({
+        itemSelector : '.gif',
+        isFitWidth: true
+      });
+    });
+
+    $container.infinitescroll({
+      navSelector: '#page-nav',
+      nextSelector: '#page-nav a',
+      itemSelector: '.gif',
+      loading: {
+          finishedMsg: 'No more pages to load.',
+        },
+      },
+      function(newElements) {
+        // hide new items while they are loading
+        var $newElems = $(newElements).css({opacity: 0});
+        // ensure that images load before adding to masonry layout
+        $newElems.imagesLoaded(function(){
+          // show elems now they're ready
+          $newElems.animate({opacity: 1});
+          $container.masonry('appended', $newElems, true);
+        });
+      }
+    );
+
+    $(".nav_submit a").click(function(e){
+      e.preventDefault();
+      $(".submit_popup").attr("style", "");
+    });
+
+    $(".sign_in_form #Submit").live('click', function(){
+      var params = $(this).parents("form").serialize();
+      $.ajax({
+        type: 'POST',
+        url: $(this).parents("form").attr("action"),
+        data: {data: params},
+        success: function(data, status, xhr) {
+          if (xhr.status === 200 && data.res == "success") {
+            window.location.reload();
+          } else {
+            $(".sign_in_form").find(".error").html(data.res);
+          }
+        },
+        error: function(data, status, xhr) {
+          alert("failure");
+        }
+      });
+    });
+
+    $(".sign_up_form #Submit").live('click', function(){
+      var params = $(this).parents("form").serialize();
+      $.ajax({
+        type: 'POST',
+        url: $(this).parents("form").attr("action"),
+        data: {data: params},
+        success: function(data, status, xhr) {
+          if (xhr.status === 200 && data.res == "success") {
+            window.location.reload();
+          } else if (data.op == "sign_up") {
+            $(".sign_up_form").find(".error").html(data.res);
+          }
+        },
+        error: function(data, status, xhr) {
+          alert("failure");
+        }
+      });
+    });
+  });
+
+  function hidecover(where) {
+    $(where).parents(".bigcover").hide();
+    return false;
+  };
+
+  </script>
+{% endblock %}
+
+{% block container %}
+  <div id="container" class="gifs_container">
+  {% for item in items %}
+    <div class="gif col6">
+    <div>
+      <a href="/gif/{{ item['pagename'] }}"><img src="/uploads/{{ item['filename'] }}" alt=""></a> 
+    </div>
+        
+    <div class="tags"> 
+    {% for tag in item['tags'] %}
+      <span><a href="/tag/{{ tag }}">{{ tag }}</a></span>
+    {% endfor %}
+    </div>
+
+    {% if "fromimgid" not in item %}
+      <div class="user_info">Gifed by <a href="/{{ item['username'] }}" style="font-size:90%;">{{ item['username'] }}</a> onto 
+      <a href="/{{ item["username"] }}/{{ item["board"] }}" style="font-size:90%;">{{ item["board"] }}</a></div>
+    {% else %}
+      <div class="user_info">Regifed by <a href="/{{ item['username'] }}" style="font-size:90%;">{{ item['username'] }}</a> onto 
+      <a href="/{{ item["username"] }}/{{ item["board"] }}" style="font-size:90%;">{{ item["board"] }}</a></div>
+    {% endif %}
+    </div>
+  {% endfor %}
+  </div>
+  <nav id="page-nav" style="display:none;"><a href="/page/2">See</a></nav>
+{% endblock %}

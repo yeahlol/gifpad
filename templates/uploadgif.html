@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+{% block title %}{{ gettext("Upload") }} - {% endblock %}
+{% block static %}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/fineuploader.css') }}">
+  <!-- javascript files -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="{{ url_for('static', filename='js/jquery.fineuploader-3.0.js') }}" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8">
+
+    $(document).ready(function() {
+      var restrictuploader = new qq.FineUploader({
+        element: $("#restricted-fine-uploader")[0],
+        request: {
+          endpoint: '/upload/receiver'
+        },
+        text: {
+          uploadButton: "Click!!"
+        },
+        validation: {
+          allowedExtensions: ['gif'],
+          sizeLimit: 5242880
+        },
+        callbacks: {
+          onComplete: function(id, fileName, responseJSON) {
+          if (responseJSON.success) {
+            if (responseJSON.username == "{{ sign_in_username }}") {
+                $('#gifdropzone').append('<li class="publisher_gif"><img src="/uploads/'+responseJSON.fname+'" dataid=\
+                  "'+responseJSON.dataid+'"><div class="x">x</div><input type="text" name="tags['+responseJSON.dataid+']" placeholder="{{ gettext('tags') }}"><input type="text" name="description['+responseJSON.dataid+']" placeholder="{{ gettext('description(optional)') }}"></li>');
+
+                  $('.x').bind('click', function() {
+                    var gif = $(this).closest(".publisher_gif");
+                    $.ajax({url: '/gif_delete/receiver/'+gif.children('img').attr('dataid'), 
+                      type: 'DELETE',
+                      dataType: 'json',
+                        success: function(responseJSON) {gif.remove();
+                                                         var linum=$("#gifdropzone > li").size();
+                                                         if (linum==0){$("#gifdropzone").children().remove();$(".qq-upload-list").children().remove()}
+                        }
+                    });
+                  });
+              }
+            }
+          },
+          onAllComplete: function(completed_files){$.getScript("{{ url_for('static', filename='js/texts.js') }}");console.log(selectfield)}
+        },
+        debug: true
+      });
+    });
+
+  </script>
+{% endblock %}
+
+{% block container %}
+  <div id="container" class="edit_container">
+    <h2>Upload your world</h2>
+    <div id="restricted-fine-uploader"></div>
+    <div id="ready-uploaded-gif">
+      <form action="/gif/up" method="post">
+        <div class="form_section">
+          {{ form.board.label }} {{ form.board()|safe }}
+          {{ form.hidden()|safe }}
+        </div>
+        <ul id="gifdropzone"></ul>
+        <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+        <input id="send" value="Gif" type="submit">
+      </form>
+    </div>
+  </div>
+{% endblock %}

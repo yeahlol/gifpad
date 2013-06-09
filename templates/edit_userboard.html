@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+  {% block static %}
+    <script type="text/javascript" charset="utf-8">
+      function DeleteBoard() {
+        return confirm('{{ gettext("Are you sure you want to delete it?") }}'); 
+      }; 
+    </script> 
+  {% endblock %}
+
+  {% block container %}
+
+    <div id="container" class="edit_container">
+      <div class="editboardform"> 
+        <form action="/{{ boarddoc['username'] }}/{{ boarddoc['board'] }}/edit" method="post">   
+          <h2>Edit - {{ boarddoc["board"] }}</h2>
+          <div class="form_section">
+            {% set attr1 = {'placeholder': "%s" % placeho_board} %}
+            {{ form.board.label }}{{ form.board(**attr1)|safe }}
+
+            {% for field_name, field_errors in form.errors.items() if field_errors %}
+              {% if field_name == "board" %}
+                {% for error in field_errors %}
+                <div style="font-size:10px;">{{ error }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+
+            {% if edit_board_error %}
+              <div style="font-size:10px;">{{ edit_board_error }}</div>
+            {% endif %} 
+          </div>
+          <div class="form_section">
+            {% set attr2 = {'cols':"35", 'rows':"5", 'placeholder': "%s" % placeho_description} %}
+            {{ form.description.label }}{{ form.description(**attr2)|safe }}
+
+            {% for field_name, field_errors in form.errors.items() if field_errors %}
+              {% if field_name == "description" %}
+                {% for error in field_errors %}
+                <div style="font-size:10px;">{{ error }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+
+          </div>
+          <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+          <input type="submit" value="Save">
+          <a class="action_button" href="/{{ boarddoc['username'] }}/{{ boarddoc['board'] }}/delete" onclick="return DeleteBoard();">Delete Board</a>
+        </form> 
+      </div>
+    </div>
+  {% endblock %}

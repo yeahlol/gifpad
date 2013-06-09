@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block title %}{{ gettext("Add") }} - {% endblock %}
+
+{% block container %}
+  <div id="container" class="edit_container">
+    <div class="editboardform"> 
+      <form action="/gif/add" method="get">
+        <h2>Add a Gif</h2>
+        <div class="form_section">
+          {{ form.source_url(placeholder="http://", style="margin:0 auto;width:380px;max-width:380px;")|safe }}
+
+        {% for field_name, field_errors in form.errors.items() if field_errors %}
+          {% if field_name == "source_url" %}
+            {% for error in field_errors %}
+            <div style="font-size:10px;">{{ error }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        </div>
+
+        {% if source_gifurls %}
+          <input type="submit" value="Reload gifs" style="margin-bottom: 15px;">
+          <div class="photos">
+          {% for source_gifurl in source_gifurls %}
+            <div class="photo">
+              <a href="/gif/create?source_url={{ source_url_encoded }}&source_gifurl={{ source_gifurl|uriencode }}"><img src="{{ source_gifurl }}" alt=""></a>
+            </div>
+          {% endfor %}
+          </div>
+        {% else %}
+          <input type="submit" value="Find">
+        {% endif %}
+
+      </form>
+    </div>
+  </div>
+  <div id="footer">
+  </div>
+{% endblock %}

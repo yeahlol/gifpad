@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block title %}Edit {% if item["description"] %}- {{ item["description"] }} {% endif %}| {% endblock%}
+  {% block static %}
+    {{ super() }}
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- file for tags-->
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/jquery.tagit.css') }}">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/tag-it.js') }}" type="text/javascript" charset="utf-8"></script>
+
+    <script type="text/javascript" charset="utf-8">
+      $(function(){
+      //-------------------------------
+      // Tag events
+      //-------------------------------
+      var eventTags = $('#eventTags');
+      eventTags.tagit({
+        onTagClicked: function(evt, tag) {
+        }
+      });
+      });
+
+      function DeleteGif() {
+        return confirm('{{ gettext("Are you sure you want to delete it?") }}'); 
+      }; 
+    </script> 
+  {% endblock %}
+
+  {% block container %}
+    <div id="container">
+      <div class="edit_container">
+        <div class="editgifform"> 
+          <form action="/gif/{{ item['pagename'] }}/edit" method="post">   
+            <h2>Edit</h2>
+            <img src="/uploads/{{ item['filename'] }}" style="max-widht: 200px;">
+            <div class="form_section">
+              {{ form.board.label }}{{ form.board()|safe }}
+            </div>
+            <div class="form_section">
+              <label for="tags">{{ gettext("Edit tags:") }}</label>
+              <ul id="eventTags">
+              {% for tag in item['tags'] %}
+                <li>{{ tag }}</li>
+              {% endfor %}
+              </ul>
+              {% for field_name, field_errors in form.errors.items() if field_errors %}
+                {% if field_name == "tag_items" or field_name == "tag_length" or field_name == "tag_re" %}
+                  <div style="font-size:10px;">{{ field_errors }}</div>
+                {% endif %}
+              {% endfor %}
+
+            </div>
+            <div class="form_section">
+              {{ form.description.label }}{{ form.description(cols="35", rows="5")|safe }}
+ 
+              {% for field_name, field_errors in form.errors.items() if field_errors %}
+                {% if field_name == "description" %}
+                  {% for error in field_errors %}
+                  <div style="font-size:10px;">{{ error }}</div>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            </div>
+ 
+            <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+            <input type="submit" value="save">
+            <a class="action_button" href="/gif/{{ item['pagename'] }}/delete" onclick="return DeleteGif();">Delete Gif</a>
+          </form> 
+        </div>
+      </div>
+    </div>
+  {% endblock %}

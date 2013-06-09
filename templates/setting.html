@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ gettext("Setting") }} - {% endblock %}
+
+{% block container %}
+  <div id="container" class="edit_container">
+    <div class="settingform"> 
+      <h2>Change Setting</h2>
+      <form action="{{ url_for('setting') }}" method="post">   
+        <div class="form_section">
+          {{ form.email.label }} {{ form.email()|safe }}
+        {% if update_email_error %}
+          <div style="font-size:10px;">{{ update_email_error }}</div>
+        {% endif %} 
+        </div>
+        <div class="form_section">
+          <label for="newpassword">{{ gettext("Password:") }}</label> <a href="{{ url_for('change_password') }}" >{{ gettext("Change Password") }}</a> 
+        </div>
+        <div class="form_section">
+          {{ form.aboutuser.label }} {{ form.aboutuser(cols="30", rows="5")|safe }}
+
+          {% for field_name, field_errors in form.errors.items() if field_errors %}
+            {% if field_name == "aboutuser" %}
+              {% for error in field_errors %}
+              <div style="font-size:10px;">{{ error }}</div>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+
+        </div>
+        <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+        <input type="submit" value="Save">
+      </form> 
+    </div>
+  <div>
+{% endblock %}

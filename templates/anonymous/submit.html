@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ gettext("Login or Register") }} - {% endblock %}
+
+{% block container %}
+  <div id="container" class="submit_container" style="padding-left:2%;">
+    <div class="submit">
+      <form action="{{ url_for('sign_up') }}" method="post" class="sign_up_form">
+        <fieldset>
+          <div class="grouping">
+            {{ form1.username.label }}
+            <div class="input">  
+              {{ form1.username(size=30) }}
+          </div>
+          </div>
+          <div class="grouping">
+            {{ form1.password.label }}
+            <div class="input">  
+              {{ form1.password(size=30, placeholder="••••••••") }}
+            </div>
+          </div>
+          <div class="grouping">
+            {{ form1.email.label }} 
+            <div class="input">  
+              {{ form1.email(size=30) }}
+            </div>
+          </div>
+        </fieldset>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              {% if category == 'sign_up' %}
+                <div style="font-size:10px;">{{ message }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+        <input type="submit" value="Start"/>
+      </form>
+    </div>
+    <div class="submit aida">
+      <form action="{{ url_for('sign_in') }}" method="post" class="sign_up_form">
+        <fieldset>
+          <div class="grouping">
+            {{ form2.username.label }}
+            <div class="input">  
+             {{ form2.username(size=30, autofocus=true) }}
+            </div>
+          </div>
+          <div class="grouping">
+            {{ form2.password.label }}
+            <div class="input">  
+              {{ form2.password(size=30, placeholder="••••••••") }}
+            </div>
+          </div>
+        </fieldset>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              {% if category == 'sign_in' %}
+                <div style="font-size:10px;">{{ message }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+        <input type="submit" value="Login"/>
+      </form>
+    <div>
+  <div>
+{% endblock %}

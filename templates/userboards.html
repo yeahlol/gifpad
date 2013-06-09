@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block title %}{{ useritem['username'] }}' Board - {% endblock %}
+{% block static %}
+  <!-- javascript files -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="{{ url_for('static', filename='js/jquery.masonry.min.js') }}" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8">
+    $(function(){ 
+      var $container = $('#container');
+
+      $container.imagesLoaded( function(){
+        $container.masonry({
+          itemSelector : '.gif',
+          isFitWidth: true
+        });
+      });
+
+     
+      $("#subscribe_button").live('click', function(e) {
+        e.preventDefault(); /* 動作停止 */
+        alert("Sorry, Timeline and Subscribe functions are not yet implemented...");
+      });
+    });
+
+  </script>
+{% endblock %}
+
+{% block container %}
+  <div id="container" class="gifs_container">
+      <div class="gif col6">
+        {{ useritem['username'] }}
+        <p>{{ useritem['aboutuser'] }}</p>
+      </div>
+    {% for userboard in userboards %}
+      <div class="gif col6">
+        <div class="board_title">
+          <a href="/{{ userboard[0]['username'] }}/{{ userboard[0]['board'] }}">{{ userboard[0]['board'] }}</a>
+        </div>
+        <div class="gif_registered_to_boards">
+          <a href="/{{ userboard[0]['username'] }}/{{ userboard[0]['board'] }}">
+          {% set gifitems = userboard[1][:6] %}
+          {% if gifitems[0] %}
+            <div class="gif_registered_to_board"><img src="/uploads/{{ gifitems[0]["filename"] }}" style="width: 60px;height: 60px;" alt=""></div>
+          {% else %}
+            <div class="gif_registered_to_board"></div>
+          {% endif %} 
+          {% if gifitems[1] %}
+            <div class="gif_registered_to_board"><img src="/uploads/{{ gifitems[1]["filename"] }}" style="width: 60px;height: 60px;" alt=""></div>
+          {% else %}
+            <div class="gif_registered_to_board"></div>
+          {% endif %} 
+          {% if gifitems[2] %}
+            <div class="gif_registered_to_board"><img src="/uploads/{{ gifitems[2]["filename"] }}" style="width: 60px;height: 60px;" alt=""></div>
+          {% else %}
+            <div class="gif_registered_to_board"></div>
+          {% endif %} 
+          {% if gifitems[3] %}
+            <div class="gif_registered_to_board"><img src="/uploads/{{ gifitems[3]["filename"] }}" style="width: 60px;height: 60px;" alt=""></div>
+          {% else %}
+            <div class="gif_registered_to_board"></div>
+          {% endif %} 
+          {% if gifitems[4] %}
+            <div class="gif_registered_to_board"><img src="/uploads/{{ gifitems[4]["filename"] }}" style="width: 60px;height: 60px;" alt=""></div>
+          {% else %}
+            <div class="gif_registered_to_board"></div>
+          {% endif %} 
+          {% if gifitems[5] %}
+            <div class="gif_registered_to_board"><img src="/uploads/{{ gifitems[5]["filename"] }}" style="width: 60px;height: 60px;" alt=""></div>
+          {% else %}
+            <div class="gif_registered_to_board"></div>
+          {% endif %} 
+          </a>
+        </div>
+        {% if userboard[0]['username'] == sign_in_username %}
+          <a class="edit_button" href="/{{ userboard[0]['username'] }}/{{ userboard[0]['board'] }}/edit">Edit</a>
+        {% else%}
+          <a class="edit_button" id="subscribe_button" href="/{{ userboard[0]['username'] }}/{{ userboard[0]['board'] }}">Subscribe</a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

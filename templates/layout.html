@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" sizes="16x16" type="MIME タイプ">
+  <title>{% block title %}{% endblock %}GifPad</title>
+  {% block static %}
+  {% endblock %} 
+</head>
+<body>
+{% block header %}
+  <header>
+    <div id="logo"><a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/logo.png') }}" alt=""></a></div>
+  {% if sign_in_username %}
+    <ul id="nav">
+      <li><a href="#"><img src="{{ url_for('static', filename='img/settings.png') }}" alt=""></a>
+      <ul class="dropdown">
+        <li><a href="/{{ sign_in_username }}">My Boards</a></li>
+        <li><a href="{{ url_for('setting') }}">{{ gettext("Setting") }}</a></li>
+        <li><a href="{{ url_for('sign_out') }}">{{ gettext("Logout") }}</a></li>
+      </ul>
+      </li>
+      <li><a href="#"><img src="{{ url_for('static', filename='img/add.png') }}" alt=""></a>
+      <ul class="dropdown">
+        <li><a href="{{ url_for('add_gif') }}">{{ gettext("Add a Gif") }}</a></li>
+        <li><a href="{{ url_for('upload_gif') }}">{{ gettext("Upload Gif") }}</a></li>
+        <li><a href="{{ url_for('create_board') }}">{{ gettext("Create a board") }}</a></li>
+      </ul>
+    </ul>
+  {% else %}
+    {% if not submit %}
+    <ul id="nav">
+      <li class="nav_submit"><a href="{{ url_for('submit') }}">{{ gettext("join") }}</a></li>
+    </ul>
+    <div class="submit_popup bigcover" style="display: none">
+      <div class="cover" onclick="return hidecover(this)"></div>
+      <div class="popup">
+        <a href="#" onclick="return hidecover(this)" class="hidecover">{{ gettext("close") }}</a>
+        <h3 class="popup_title">{{ gettext("Login or Register") }}</h3>
+        <div class="submit">
+          <form class="sign_up_form" action="{{ url_for("sign_up") }}">
+            <fieldset>
+              <div class="grouping">
+                {{ form1.username.label }}
+                <div class="input">  
+                  {{ form1.username(size=30, placeholder="") }}
+              </div>
+              </div>
+              <div class="grouping">
+                {{ form1.password.label }}
+                <div class="input">  
+                  {{ form1.password(size=30, placeholder="••••••••") }}
+                </div>
+              </div>
+              <div class="grouping">
+                {{ form1.email.label }} 
+                <div class="input">  
+                  {{ form1.email(size=30, autofocus=true, placeholder="") }}
+                </div>
+              </div>
+            </fieldset>
+            <div class="error" style="font-size:10px;"></div>
+            <input type="button" value="Start" id="Submit">
+          </form>
+        </div>
+        <div class="submit aida">
+          <form class="sign_in_form" action="{{ url_for("sign_in") }}">
+            <fieldset>
+              <div class="grouping">
+                {{ form2.username.label }}
+                <div class="input">  
+                  {{ form2.username(size=30, autofocus=true) }}
+                </div>
+              </div>
+              <div class="grouping">
+                {{ form2.password.label }}
+                <div class="input">  
+                  {{ form2.password(size=30, placeholder="••••••••") }}
+                </div>
+              </div>
+            </fieldset>
+            <div class="error" style="font-size:10px;"></div>
+            <div class="reset" style="font-size:10px;text-align:right"><a href="{{ url_for("send_email") }}">Reset Password</a></div>
+            <input type="button" value="Login" id="Submit">
+          </form>
+      </div>
+    </div>
+    {% endif %}
+  {% endif %}
+  </header>
+{% endblock %}
+
+{% block header_category %}
+  <div id="sub-header">
+  </div>
+{% endblock %}
+
+{% block container %}
+{% endblock %}
+</body>
+</html>
